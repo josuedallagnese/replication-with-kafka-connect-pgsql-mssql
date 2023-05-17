@@ -1,0 +1,22 @@
+{
+	"name": "products-sink",
+	"config": {
+		"connector.class": "io.aiven.connect.jdbc.JdbcSinkConnector",
+		"value.converter.schemas.enable": "true",
+		"key.converter.schemas.enable": "true",
+		"key.converter": "org.apache.kafka.connect.json.JsonConverter",
+		"value.converter": "org.apache.kafka.connect.json.JsonConverter",
+		"connection.url": "jdbc:sqlserver://mssql-debezium:1433;user=sa;password=admin2023!;encrypt=false;",
+		"database.history.kafka.bootstrap.servers": "kafka-debezium:9092",
+        "insert.mode": "UPSERT",
+        "pk.mode": "record_key",
+		"pk.fields": "id",
+        "delete.enabled": "true",
+        "auto.create": "true",
+        "auto.evolve": "true",
+        "batch.size": "1",
+        "schemas.enable": "true",
+        "topics.to.tables.mapping": "products_source.replication.products:Products",
+		"topics": "products_source.replication.products"
+	}
+}

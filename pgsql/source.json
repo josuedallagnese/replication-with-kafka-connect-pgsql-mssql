@@ -1,0 +1,28 @@
+{
+	"name": "products_source",
+	"config": {
+		"connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+		"tasks.max": "1",
+		"database.hostname": "postgres-debezium",
+		"database.port": "5432",
+		"database.user": "postgres",
+		"database.password": "admin2023!",
+		"database.dbname": "postgres",
+        "database.server.name": "products_source",
+		"database.history.kafka.bootstrap.servers": "kafka-debezium:9092",
+		"database.history.kafka.topic": "products_source",
+		"table.include.list": "replication.products",
+		"column.include.list": "replication.products.id,replication.products.name,replication.products.description",
+		"value.converter.schemas.enable": "true",
+		"key.converter.schemas.enable": "true",
+		"key.converter": "org.apache.kafka.connect.json.JsonConverter",
+		"value.converter": "org.apache.kafka.connect.json.JsonConverter",
+		"transforms": "unwrap",
+		"transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+		"snapshot.mode": "initial",
+		"errors.log.enable": "true",
+		"config.retention.ms": "-1",
+		"plugin.name": "pgoutput",
+		"slot.name": "productsconnector"
+	}
+}

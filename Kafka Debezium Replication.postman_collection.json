@@ -1,0 +1,144 @@
+{
+	"info": {
+		"_postman_id": "9ee5f79c-8cd5-4f7b-a6c0-a2ad3c7cc855",
+		"name": "Kafka Debezium Replication",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1583730",
+		"_collection_link": "https://cloudy-water-688809.postman.co/workspace/Credz~696a60fe-4de7-4a2b-93e3-9dced7a5984f/collection/1583730-9ee5f79c-8cd5-4f7b-a6c0-a2ad3c7cc855?action=share&creator=1583730&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "GET Connectors",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8083/connectors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connectors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Source Connector",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"name\": \"products_source\",\r\n\t\"config\": {\r\n\t\t\"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\r\n\t\t\"tasks.max\": \"1\",\r\n\t\t\"database.hostname\": \"postgres-debezium\",\r\n\t\t\"database.port\": \"5432\",\r\n\t\t\"database.user\": \"postgres\",\r\n\t\t\"database.password\": \"admin2023!\",\r\n\t\t\"database.dbname\": \"postgres\",\r\n        \"database.server.name\": \"products_source\",\r\n\t\t\"database.history.kafka.bootstrap.servers\": \"kafka-debezium:9092\",\r\n\t\t\"database.history.kafka.topic\": \"products_source\",\r\n\t\t\"table.include.list\": \"replication.products\",\r\n\t\t\"column.include.list\": \"replication.products.id,replication.products.name,replication.products.description\",\r\n\t\t\"value.converter.schemas.enable\": \"true\",\r\n\t\t\"key.converter.schemas.enable\": \"true\",\r\n\t\t\"key.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n\t\t\"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n\t\t\"transforms\": \"unwrap\",\r\n\t\t\"transforms.unwrap.type\": \"io.debezium.transforms.ExtractNewRecordState\",\r\n\t\t\"snapshot.mode\": \"initial\",\r\n\t\t\"errors.log.enable\": \"true\",\r\n\t\t\"config.retention.ms\": \"-1\",\r\n\t\t\"plugin.name\": \"pgoutput\",\r\n\t\t\"slot.name\": \"productsconnector\"\r\n\t}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/connectors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connectors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Sink Connector",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"name\": \"products-sink\",\r\n\t\"config\": {\r\n\t\t\"connector.class\": \"io.aiven.connect.jdbc.JdbcSinkConnector\",\r\n\t\t\"value.converter.schemas.enable\": \"true\",\r\n\t\t\"key.converter.schemas.enable\": \"true\",\r\n\t\t\"key.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n\t\t\"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n\t\t\"connection.url\": \"jdbc:sqlserver://mssql-debezium:1433;user=sa;password=admin2023!;encrypt=false;\",\r\n\t\t\"database.history.kafka.bootstrap.servers\": \"kafka-debezium:9092\",\r\n        \"insert.mode\": \"UPSERT\",\r\n        \"pk.mode\": \"record_key\",\r\n\t\t\"pk.fields\": \"id\",\r\n        \"delete.enabled\": \"true\",\r\n        \"auto.create\": \"true\",\r\n        \"auto.evolve\": \"true\",\r\n        \"batch.size\": \"1\",\r\n        \"schemas.enable\": \"true\",\r\n        \"topics.to.tables.mapping\": \"products_source.replication.products:Products\",\r\n\t\t\"topics\": \"products_source.replication.products\"\r\n\t}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/connectors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connectors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE Source Connector",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"name\": \"products-connector\",\r\n\t\"config\": {\r\n\t\t\"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\r\n\t\t\"tasks.max\": \"1\",\r\n\t\t\"database.hostname\": \"postgres-pipeline\",\r\n\t\t\"database.port\": \"5432\",\r\n\t\t\"database.user\": \"postgres\",\r\n\t\t\"database.password\": \"Postgres2021!\",\r\n\t\t\"database.dbname\": \"postgres\",\r\n\t\t\"database.server.name\": \"postgres\",\r\n\t\t\"table.include.list\": \"public.products\",\r\n\t\t\"column.include.list\": \"public.products.id,public.products.name,public.products.description\",\r\n\t\t\"value.converter.schemas.enable\": \"true\",\r\n\t\t\"key.converter.schemas.enable\": \"true\",\r\n\t\t\"key.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n\t\t\"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n\t\t\"transforms\": \"unwrap\",\r\n\t\t\"transforms.unwrap.type\": \"io.debezium.transforms.ExtractNewRecordState\",\r\n\t\t\"snapshot.mode\": \"initial_only\",\r\n\t\t\"errors.log.enable\": \"true\",\r\n\t\t\"config.retention.ms\": \"-1\",\r\n\t\t\"plugin.name\": \"pgoutput\",\r\n\t\t\"slot.name\": \"products_connector\"\r\n\t}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/connectors/products-source",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connectors",
+						"products-source"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE Sink Connector",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"name\": \"products-connector\",\r\n\t\"config\": {\r\n\t\t\"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\r\n\t\t\"tasks.max\": \"1\",\r\n\t\t\"database.hostname\": \"postgres-pipeline\",\r\n\t\t\"database.port\": \"5432\",\r\n\t\t\"database.user\": \"postgres\",\r\n\t\t\"database.password\": \"Postgres2021!\",\r\n\t\t\"database.dbname\": \"postgres\",\r\n\t\t\"database.server.name\": \"postgres\",\r\n\t\t\"table.include.list\": \"public.products\",\r\n\t\t\"column.include.list\": \"public.products.id,public.products.name,public.products.description\",\r\n\t\t\"value.converter.schemas.enable\": \"true\",\r\n\t\t\"key.converter.schemas.enable\": \"true\",\r\n\t\t\"key.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n\t\t\"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n\t\t\"transforms\": \"unwrap\",\r\n\t\t\"transforms.unwrap.type\": \"io.debezium.transforms.ExtractNewRecordState\",\r\n\t\t\"snapshot.mode\": \"initial_only\",\r\n\t\t\"errors.log.enable\": \"true\",\r\n\t\t\"config.retention.ms\": \"-1\",\r\n\t\t\"plugin.name\": \"pgoutput\",\r\n\t\t\"slot.name\": \"products_connector\"\r\n\t}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/connectors/products-sink",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connectors",
+						"products-sink"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

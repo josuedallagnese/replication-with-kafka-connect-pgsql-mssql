@@ -1,0 +1,92 @@
+version: '3'
+services:
+  zookeeper-debezium:
+    image: debezium/zookeeper:1.5
+    container_name: zookeeper-debezium
+    hostname: zookeeper-debezium
+    ports:
+     - 2181:2181
+     - 2888:2888
+     - 3888:3888
+    networks:
+      - debezium-compose-network
+
+  kafka-debezium:
+    image: debezium/kafka:1.5
+    container_name: kafka-debezium
+    hostname: kafka-debezium
+    ports:
+     - 9092:9092
+    links:
+     - zookeeper-debezium
+    environment:
+     - ZOOKEEPER_CONNECT=zookeeper-debezium:2181
+    networks:
+      - debezium-compose-network
+
+  connect-debezium:
+    build:
+      context: .
+      dockerfile: ./connectors/Dockerfile
+    container_name: connect-debezium
+    hostname: connect-debezium
+    ports:
+     - 8083:8083
+    links:
+     - kafka-debezium
+    environment:
+     - BOOTSTRAP_SERVERS=kafka-debezium:9092
+     - GROUP_ID=1
+     - CONFIG_STORAGE_TOPIC=debezium_connect_configs
+     - OFFSET_STORAGE_TOPIC=debezium_connect_offsets
+     - STATUS_STORAGE_TOPIC=debezium_connect_statuses
+    networks:
+      - debezium-compose-network
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8080:8080
+    links:
+     - kafka-debezium
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-debezium:9092
+      KAFKA_CLUSTERS_0_METRICS_PORT: 9997
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: first
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://connect-debezium:8083
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    networks:
+      - debezium-compose-network
+
+  postgres:
+    image: postgres
+    hostname: postgres-debezium
+    container_name: postgres-debezium
+    shm_size: 4gb
+    environment:
+      POSTGRES_PASSWORD: "admin2023!"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgsql/data:/var/lib/postgresql/data
+    networks:
+      - debezium-compose-network
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: mssql-debezium
+    hostname: mssql-debezium
+    environment:
+      SA_PASSWORD: "admin2023!"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    networks:
+      - debezium-compose-network
+
+networks: 
+  debezium-compose-network:
+    driver: bridge
