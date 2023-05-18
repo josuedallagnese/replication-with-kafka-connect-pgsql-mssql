@@ -33,7 +33,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"name\": \"products_source\",\r\n\t\"config\": {\r\n\t\t\"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\r\n\t\t\"tasks.max\": \"1\",\r\n\t\t\"database.hostname\": \"postgres-debezium\",\r\n\t\t\"database.port\": \"5432\",\r\n\t\t\"database.user\": \"postgres\",\r\n\t\t\"database.password\": \"admin2023!\",\r\n\t\t\"database.dbname\": \"postgres\",\r\n        \"database.server.name\": \"products_source\",\r\n\t\t\"database.history.kafka.bootstrap.servers\": \"kafka-debezium:9092\",\r\n\t\t\"database.history.kafka.topic\": \"products_source\",\r\n\t\t\"table.include.list\": \"replication.products\",\r\n\t\t\"column.include.list\": \"replication.products.id,replication.products.name,replication.products.description\",\r\n\t\t\"value.converter.schemas.enable\": \"true\",\r\n\t\t\"key.converter.schemas.enable\": \"true\",\r\n\t\t\"key.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n\t\t\"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n\t\t\"transforms\": \"unwrap\",\r\n\t\t\"transforms.unwrap.type\": \"io.debezium.transforms.ExtractNewRecordState\",\r\n\t\t\"snapshot.mode\": \"initial\",\r\n\t\t\"errors.log.enable\": \"true\",\r\n\t\t\"config.retention.ms\": \"-1\",\r\n\t\t\"plugin.name\": \"pgoutput\",\r\n\t\t\"slot.name\": \"productsconnector\"\r\n\t}\r\n}",
+					"raw": "{\r\n    \"name\": \"products_source\",\r\n    \"config\": {\r\n        \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\r\n        \"tasks.max\": \"1\",\r\n        \"database.hostname\": \"postgres-debezium\",\r\n        \"database.port\": \"5432\",\r\n        \"database.user\": \"postgres\",\r\n        \"database.password\": \"admin2023!\",\r\n        \"database.dbname\": \"postgres\",\r\n        \"database.server.name\": \"products_source\",\r\n        \"database.history.kafka.bootstrap.servers\": \"kafka-debezium:9092\",\r\n        \"database.history.kafka.topic\": \"products_source\",\r\n        \"table.whitelist\": \"replication.products\",\r\n        \"table.include.list\": \"replication.products\",\r\n        \"column.include.list\": \"replication.products.id,replication.products.name,replication.products.description\",\r\n        \"value.converter.schemas.enable\": \"true\",\r\n        \"key.converter.schemas.enable\": \"true\",\r\n        \"key.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n        \"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n        \"time.precision.mode\": \"connect\",\r\n        \"include.schema.changes\": \"true\",\r\n        \"snapshot.mode\": \"initial\",\r\n        \"snapshot.isolation.mode\": \"snapshot\",\r\n        \"errors.log.enable\": \"true\",\r\n        \"retention.ms\": \"Infinite\",\r\n        \"plugin.name\": \"pgoutput\",\r\n        \"slot.name\": \"productsconnector\",\r\n        \"transforms\": \"unwrap\",\r\n\t\t\"transforms.unwrap.type\": \"io.debezium.transforms.ExtractNewRecordState\",\r\n        \"transforms.unwrap.drop.tombstones\": \"false\",\r\n        \"transforms.unwrap.delete.handling.mode\": \"rewrite\"\r\n    }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -61,7 +61,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"name\": \"products-sink\",\r\n\t\"config\": {\r\n\t\t\"connector.class\": \"io.aiven.connect.jdbc.JdbcSinkConnector\",\r\n\t\t\"value.converter.schemas.enable\": \"true\",\r\n\t\t\"key.converter.schemas.enable\": \"true\",\r\n\t\t\"key.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n\t\t\"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n\t\t\"connection.url\": \"jdbc:sqlserver://mssql-debezium:1433;user=sa;password=admin2023!;encrypt=false;\",\r\n\t\t\"database.history.kafka.bootstrap.servers\": \"kafka-debezium:9092\",\r\n        \"insert.mode\": \"UPSERT\",\r\n        \"pk.mode\": \"record_key\",\r\n\t\t\"pk.fields\": \"id\",\r\n        \"delete.enabled\": \"true\",\r\n        \"auto.create\": \"true\",\r\n        \"auto.evolve\": \"true\",\r\n        \"batch.size\": \"1\",\r\n        \"schemas.enable\": \"true\",\r\n        \"topics.to.tables.mapping\": \"products_source.replication.products:Products\",\r\n\t\t\"topics\": \"products_source.replication.products\"\r\n\t}\r\n}",
+					"raw": "{\r\n\t\"name\": \"products_sink\",\r\n\t\"config\": {\r\n\t\t\"connector.class\": \"io.aiven.connect.jdbc.JdbcSinkConnector\",\r\n\t\t\"value.converter.schemas.enable\": \"true\",\r\n\t\t\"key.converter.schemas.enable\": \"true\",\r\n\t\t\"key.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n\t\t\"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\r\n\t\t\"connection.url\": \"jdbc:sqlserver://mssql-debezium:1433;user=sa;password=admin2023!;encrypt=false;\",\r\n\t\t\"database.history.kafka.bootstrap.servers\": \"kafka-debezium:9092\",\r\n        \"insert.mode\": \"UPSERT\",\r\n        \"pk.mode\": \"record_key\",\r\n\t\t\"pk.fields\": \"id\",\r\n        \"delete.enabled\": \"true\",\r\n        \"auto.create\": \"true\",\r\n        \"auto.evolve\": \"true\",\r\n        \"batch.size\": \"3000\",\r\n        \"schemas.enable\": \"true\",\r\n        \"topics.to.tables.mapping\": \"products_source.replication.products:Products\",\r\n\t\t\"topics\": \"products_source.replication.products\",\r\n        \"errors.log.enable\": \"true\"\r\n\t}\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -97,7 +97,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8083/connectors/products-source",
+					"raw": "http://localhost:8083/connectors/products_source",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -105,7 +105,7 @@
 					"port": "8083",
 					"path": [
 						"connectors",
-						"products-source"
+						"products_source"
 					]
 				}
 			},
@@ -126,7 +126,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8083/connectors/products-sink",
+					"raw": "http://localhost:8083/connectors/products_sink",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -134,7 +134,7 @@
 					"port": "8083",
 					"path": [
 						"connectors",
-						"products-sink"
+						"products_sink"
 					]
 				}
 			},

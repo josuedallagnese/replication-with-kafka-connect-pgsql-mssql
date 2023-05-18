@@ -1,5 +1,5 @@
 {
-	"name": "products-sink",
+	"name": "products_sink",
 	"config": {
 		"connector.class": "io.aiven.connect.jdbc.JdbcSinkConnector",
 		"value.converter.schemas.enable": "true",
@@ -14,9 +14,10 @@
         "delete.enabled": "true",
         "auto.create": "true",
         "auto.evolve": "true",
-        "batch.size": "1",
+        "batch.size": "3000",
         "schemas.enable": "true",
         "topics.to.tables.mapping": "products_source.replication.products:Products",
-		"topics": "products_source.replication.products"
+		"topics": "products_source.replication.products",
+        "errors.log.enable": "true"
 	}
 }
