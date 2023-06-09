@@ -70,7 +70,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./pgsql/data:/var/lib/postgresql/data
+      - postgres-vol:/var/lib/postgresql/data
     networks:
       - debezium-compose-network
 
@@ -90,3 +90,6 @@ services:
 networks: 
   debezium-compose-network:
     driver: bridge
+
+volumes:
+  postgres-vol:
